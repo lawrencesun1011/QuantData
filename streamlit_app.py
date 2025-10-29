@@ -17,7 +17,7 @@ st.set_page_config(
 st.title("股票数据可视化")
 
 # 数据URL
-DATA_URL = "https://gist.githubusercontent.com/lawrencesun1011/a896403c442e4f8d13cb6ecb9e331b48/raw/777572876a1e14d8c5f5e90cfaef636833217920/data.csv"
+DATA_URL = "https://gist.githubusercontent.com/lawrencesun1011/a896403c442e4f8d13cb6ecb9e331b48/raw/674a776dc0e1c0848a2697f2dfbcc6ca2c3987e5/data.csv"
 
 # 加载数据的函数
 @st.cache_data

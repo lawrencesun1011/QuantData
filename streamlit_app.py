@@ -53,6 +53,9 @@ def load_data():
         # 计算回撤
         data['drawdown'] = calculate_drawdown(data['账户总净值'])
         
+        # 计算归一化净值（从1开始）
+        data['归一化净值'] = data['账户总净值'] / data['账户总净值'].iloc[0]
+        
         return data
     except Exception as e:
         st.error(f"加载数据时出错: {str(e)}")
@@ -74,14 +77,14 @@ if df is not None:
     # 创建双Y轴图表
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     
-    # 添加净值曲线（左Y轴）
+    # 添加归一化净值曲线（左Y轴，从1开始）
     fig.add_trace(
         go.Scatter(
             x=df['time'], 
-            y=df['账户总净值'], 
-            name='账户总净值', 
+            y=df['归一化净值'], 
+            name='归一化净值', 
             line=dict(color='#1f77b4'),
-            hovertemplate='时间: %{x|%Y-%m-%d}<br>账户总净值: %{y:.2f}<extra></extra>'
+            hovertemplate='时间: %{x|%Y-%m-%d}<br>归一化净值: %{y:.4f}<extra></extra>'
         ),
         secondary_y=False,
     )
@@ -115,19 +118,19 @@ if df is not None:
     
     # 设置Y轴标签
     fig.update_xaxes(title_text='时间')
-    fig.update_yaxes(title_text='净值', secondary_y=False)
+    fig.update_yaxes(title_text='归一化净值', secondary_y=False)
     fig.update_yaxes(title_text='回撤(%)', secondary_y=True)
     
     # 显示图表
     st.plotly_chart(fig, use_container_width=True)
     
     # 计算并显示关键指标
-    current_net_value = df['账户总净值'].iloc[-1]  # 当前净值
-    max_net_value = df['账户总净值'].max()  # 最大净值
-    min_net_value = df['账户总净值'].min()  # 最小净值
+    current_capital = df['账户总净值'].iloc[-1]  # 当前资金
+    max_capital = df['账户总净值'].max()  # 最大资金
+    min_capital = df['账户总净值'].min()  # 最小资金
     current_dd = df['drawdown'].iloc[-1]  # 当前回撤百分比
     max_dd = df['drawdown'].min()  # 最大回撤百分比
-    st.info(f"当前净值: {current_net_value:.2f} | 最大净值: {max_net_value:.2f} | 最小净值: {min_net_value:.2f}")
+    st.info(f"当前资金: {current_capital:.2f} | 最大资金: {max_capital:.2f} | 最小资金: {min_capital:.2f}")
     st.info(f"当前回撤: {current_dd:.2f}% | 最大回撤: {max_dd:.2f}%")
 
 # 侧边栏信息

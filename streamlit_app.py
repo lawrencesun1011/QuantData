@@ -8,13 +8,13 @@ from plotly.subplots import make_subplots
 
 # 设置页面配置
 st.set_page_config(
-    page_title="数据可视化应用",
+    page_title="策略可视化应用",
     page_icon="📊",
     layout="wide"
 )
 
 # 页面标题
-st.title("股票数据可视化")
+st.title("量化策略实盘监控")
 
 # 数据URL
 DATA_URL = "https://gist.githubusercontent.com/lawrencesun1011/a896403c442e4f8d13cb6ecb9e331b48/raw/674a776dc0e1c0848a2697f2dfbcc6ca2c3987e5/data.csv"

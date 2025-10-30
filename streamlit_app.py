@@ -117,7 +117,7 @@ if df is not None:
     )
     
     # 设置Y轴标签
-    fig.update_xaxes(title_text='时间')
+    fig.update_xaxes(title_text='时间（东京时间 UTC+9）')
     fig.update_yaxes(title_text='归一化净值', secondary_y=False)
     fig.update_yaxes(title_text='回撤(%)', secondary_y=True)
     

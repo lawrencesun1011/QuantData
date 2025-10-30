@@ -18,6 +18,8 @@ st.title("量化策略实盘监控")
 
 # 数据URL
 DATA_URL = "https://gist.githubusercontent.com/lawrencesun1011/a896403c442e4f8d13cb6ecb9e331b48/raw/data.csv"
+SPOT_URL = 'https://gist.githubusercontent.com/lawrencesun1011/a896403c442e4f8d13cb6ecb9e331b48/raw/spot.csv'
+SWAP_URL = 'https://gist.githubusercontent.com/lawrencesun1011/a896403c442e4f8d13cb6ecb9e331b48/raw/swap.csv'
 
 def calculate_drawdown(equity_series):
     # 计算累计最大值
@@ -25,6 +27,36 @@ def calculate_drawdown(equity_series):
     # 计算回撤
     drawdown = (equity_series - running_max) / running_max * 100
     return drawdown
+
+# 加载仓位数据的函数
+@st.cache_data(ttl=1200)
+def load_position_data(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        
+        data = pd.read_csv(io.BytesIO(response.content))
+        
+        # 检查必需的列是否存在
+        required_columns = ['symbol', 'side', 'pos_u']
+        for col in required_columns:
+            if col not in data.columns:
+                st.error(f"数据中缺少 '{col}' 列")
+                return None
+        
+        # 只保留需要的列
+        position_data = data[['symbol', 'side', 'pos_u']].copy()
+        
+        # 重命名列
+        position_data.columns = ['币种', '方向', '仓位']
+        
+        # 将方向值转换为中文
+        position_data['方向'] = position_data['方向'].map({-1: '空', 1: '多'})
+        
+        return position_data
+    except Exception as e:
+        st.error(f"加载仓位数据时出错: {str(e)}")
+        return None
 
 # 加载数据的函数
 @st.cache_data(ttl=1200)
@@ -63,6 +95,9 @@ def load_data():
 # 加载数据
 with st.spinner("正在加载数据..."):
     df = load_data()
+    # 加载合约和现货仓位数据
+    swap_df = load_position_data(SWAP_URL)
+    spot_df = load_position_data(SPOT_URL)
 
 if df is not None:
     # 显示数据统计信息
@@ -121,7 +156,7 @@ if df is not None:
     fig.update_yaxes(title_text='回撤(%)', secondary_y=True)
     
     # 显示图表
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, config={'responsive': True})
     
     # 计算并显示关键指标
     current_capital = df['账户总净值'].iloc[-1]  # 当前资金
@@ -131,6 +166,23 @@ if df is not None:
     max_dd = df['drawdown'].min()  # 最大回撤百分比
     st.info(f"当前资金: {current_capital:.2f} | 最大资金: {max_capital:.2f} | 最小资金: {min_capital:.2f}")
     st.info(f"当前回撤: {current_dd:.2f}% | 最大回撤: {max_dd:.2f}%")
+
+# 显示合约和现货仓位信息
+st.subheader("仓位信息")
+
+# 显示合约仓位
+if swap_df is not None:
+    st.subheader("合约仓位")
+    st.dataframe(swap_df, width='stretch')
+else:
+    st.warning("无法加载合约仓位数据")
+
+# 显示现货仓位
+if spot_df is not None:
+    st.subheader("现货仓位")
+    st.dataframe(spot_df, width='stretch')
+else:
+    st.warning("无法加载现货仓位数据")
 
 # 侧边栏信息
 with st.sidebar:

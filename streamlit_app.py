@@ -19,9 +19,6 @@ st.title("量化策略实盘监控")
 # 数据URL
 DATA_URL = "https://gist.githubusercontent.com/lawrencesun1011/a896403c442e4f8d13cb6ecb9e331b48/raw/data.csv"
 
-# 加载数据的函数
-@st.cache_data(ttl=1200)
-
 def calculate_drawdown(equity_series):
     # 计算累计最大值
     running_max = equity_series.cummax()
@@ -29,6 +26,8 @@ def calculate_drawdown(equity_series):
     drawdown = (equity_series - running_max) / running_max * 100
     return drawdown
 
+# 加载数据的函数
+@st.cache_data(ttl=1200)
 def load_data():
     try:
         # 直接从URL读取数据到内存

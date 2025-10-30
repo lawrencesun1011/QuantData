@@ -17,7 +17,7 @@ st.set_page_config(
 st.title("量化策略实盘监控")
 
 # 数据URL
-DATA_URL = "https://gist.githubusercontent.com/lawrencesun1011/a896403c442e4f8d13cb6ecb9e331b48/raw/674a776dc0e1c0848a2697f2dfbcc6ca2c3987e5/data.csv"
+DATA_URL = "https://gist.githubusercontent.com/lawrencesun1011/a896403c442e4f8d13cb6ecb9e331b48/raw/data.csv"
 
 # 加载数据的函数
 @st.cache_data
